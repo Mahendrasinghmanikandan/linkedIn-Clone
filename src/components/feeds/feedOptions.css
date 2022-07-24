@@ -1,0 +1,14 @@
+.feed__Options {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
+  color: gray;
+  cursor: pointer;
+}
+.feed__Options:hover {
+  background-color: lightgray;
+  border-radius: 10px;
+}
