@@ -1,7 +1,9 @@
 import { Avatar } from "@mui/material";
 import React from "react";
+import { useSelector } from "react-redux";
 import "./sidebar.css";
 const Sidebar = () => {
+  const status = useSelector((result) => result.auth.values);
   return (
     <div className="sidebar">
       <div className="sidebar__top">
@@ -9,11 +11,12 @@ const Sidebar = () => {
           src="https://img.freepik.com/free-vector/pastel-ombre-background-pink-purple_53876-120750.jpg?w=2000"
           alt="mybacground"
         />
-        <Avatar
-          src="./assets/images/myavatar.jpg"
-          className="sidebar__avatar"
-        />
-        <h1>Manikandan .M</h1>
+        {status.user.photoURL === "" ? (
+          <Avatar>{status.user.displayName[0]}</Avatar>
+        ) : (
+          <Avatar src={status.user.photoURL} sx={{ width: 50, height: 50 }} />
+        )}
+        <h1>{status.user.displayName}</h1>
         <p>Web developer</p>
       </div>
       <div className="sidebar__stats">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Divider } from "@mui/material";
+import { Avatar, Divider, Tooltip } from "@mui/material";
 import FeedOptions from "./feedOptions";
 import "./feeds.css";
 import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
@@ -8,6 +8,8 @@ import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Post from "../post/Post";
+import { useSelector } from "react-redux";
+
 import {
   collection,
   addDoc,
@@ -19,12 +21,18 @@ import { db } from "../firebase/firebase";
 const Feeds = () => {
   const [post, setPost] = useState("");
   const [totalPosts, setTotaPost] = useState([]);
+  const status = useSelector((result) => result.auth.values);
   var current = new Date();
   const handlePost = async (e) => {
     e.preventDefault();
     if (post !== "") {
       await addDoc(collection(db, "post"), {
         message: post,
+        profile:
+          status.user.photoURL === ""
+            ? status.user.displayName[0]
+            : status.user.photoURL,
+        name: status.user.displayName,
         timestamp: current,
       });
       setPost("");
@@ -48,21 +56,35 @@ const Feeds = () => {
       <div className="feeds">
         <div className="feeds__header">
           <div className="input__container">
-            <Avatar src="./assets/images/myAvatar.jpg" />
-            <form className="input__container">
-              <input
-                type="text"
-                placeholder="Start the text"
-                className="input__box"
-                onChange={(e) => setPost(e.target.value)}
-                value={post}
-              />
-              <input
-                onClick={(e) => handlePost(e)}
-                type="submit"
-                className="input__button"
-              />
-            </form>
+            {status.user.photoURL === "" ? (
+              <Avatar>{status.user.displayName[0]}</Avatar>
+            ) : (
+              <Avatar src={status.user.photoURL} />
+            )}
+            <Tooltip
+              title={
+                !status.status
+                  ? "Please Login for Start the Text"
+                  : "Start the Text"
+              }
+              followCursor
+            >
+              <form className="input__container">
+                <input
+                  type="text"
+                  placeholder="Start the text"
+                  className="input__box"
+                  onChange={(e) => setPost(e.target.value)}
+                  value={post}
+                  disabled={!status.status}
+                />
+                <input
+                  onClick={(e) => handlePost(e)}
+                  type="submit"
+                  className="input__button"
+                />
+              </form>
+            </Tooltip>
           </div>
           <div className="feed__options">
             <FeedOptions
@@ -95,8 +117,8 @@ const Feeds = () => {
         {totalPosts.map((value) => {
           return (
             <Post
-              avatar="M"
-              name="manikandan"
+              avatar={value.profile}
+              name={value.name}
               description="infoTech"
               message={value.message}
               key={value.id}

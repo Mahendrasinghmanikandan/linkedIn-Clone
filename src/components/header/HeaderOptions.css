@@ -19,3 +19,7 @@ object-fit: contain;
 width: 25px !important;
 height: 25px !important;
 }
+.login_button{
+  outline:none;
+  padding:10px;
+}
